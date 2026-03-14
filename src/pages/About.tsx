@@ -16,25 +16,39 @@ export default function About() {
   const statsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (bioRef.current) {
-      const paragraphs = bioRef.current.querySelectorAll('p');
-      gsap.fromTo(paragraphs, 
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, stagger: 0.15, duration: 0.8, ease: 'power3.out',
-          scrollTrigger: { trigger: bioRef.current, start: 'top 80%' }
-        }
-      );
-    }
-    if (statsRef.current) {
-      const items = statsRef.current.querySelectorAll('.stat-item');
-      gsap.fromTo(items,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, stagger: 0.1, duration: 0.6, ease: 'power3.out',
-          scrollTrigger: { trigger: statsRef.current, start: 'top 85%' }
-        }
-      );
-    }
-    return () => ScrollTrigger.getAll().forEach(t => t.kill());
+    const ctx = gsap.context(() => {
+      if (bioRef.current) {
+        const paragraphs = bioRef.current.querySelectorAll('p');
+        gsap.fromTo(paragraphs,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            stagger: 0.15,
+            duration: 0.8,
+            ease: 'power3.out',
+            scrollTrigger: { trigger: bioRef.current, start: 'top 80%' },
+          }
+        );
+      }
+
+      if (statsRef.current) {
+        const items = statsRef.current.querySelectorAll('.stat-item');
+        gsap.fromTo(items,
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            stagger: 0.1,
+            duration: 0.6,
+            ease: 'power3.out',
+            scrollTrigger: { trigger: statsRef.current, start: 'top 85%' },
+          }
+        );
+      }
+    });
+
+    return () => ctx.revert();
   }, []);
 
   return (

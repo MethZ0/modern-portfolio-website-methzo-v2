@@ -160,21 +160,42 @@ export default function Home() {
       });
 
       const horizontalEl = projectsHorizontalRef.current;
-      if (horizontalEl && horizontalEl.children.length > 0) {
-        const totalScroll = horizontalEl.scrollWidth - window.innerWidth;
-        if (totalScroll > 0) {
-          gsap.to(horizontalEl, {
-            x: -totalScroll,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: projectsSectionRef.current,
-              start: 'top top',
-              end: () => `+=${totalScroll}`,
-              scrub: 1,
-              pin: true,
-              anticipatePin: 1,
-              invalidateOnRefresh: true,
-            },
+      if (horizontalEl && horizontalEl.children.length > 0 && projectsSectionRef.current) {
+        const cards = Array.from(horizontalEl.children);
+        const viewportWidth = horizontalEl.parentElement?.clientWidth ?? window.innerWidth;
+        const totalScroll = Math.max(0, horizontalEl.scrollWidth - viewportWidth);
+
+        // Always animate cards in as they enter view.
+        gsap.from(cards, {
+          y: 40,
+          opacity: 0,
+          duration: 0.6,
+          stagger: 0.08,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: projectsSectionRef.current,
+            start: 'top 75%',
+            toggleActions: 'play none none reverse',
+          },
+        });
+
+        // Only pin-scroll on desktop and when there is meaningful overflow.
+        if (totalScroll > 40) {
+          const mm = gsap.matchMedia();
+          mm.add('(min-width: 1024px)', () => {
+            gsap.to(horizontalEl, {
+              x: -totalScroll,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: projectsSectionRef.current,
+                start: 'top top',
+                end: `+=${totalScroll}`,
+                scrub: 1,
+                pin: true,
+                anticipatePin: 1,
+                invalidateOnRefresh: true,
+              },
+            });
           });
         }
       }
