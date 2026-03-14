@@ -2,9 +2,10 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
-import profileReal from '@/assets/profile.jpg';
-import profileCartoon from '@/assets/profile-cartoon.jpg';
 import { Palette, Code } from 'lucide-react';
+
+const profileReal = '/profile.jpg';
+const profileCartoon = '/profile-cartoon.jpg';
 
 export function SplitHero() {
   const [hoveredSide, setHoveredSide] = useState<'left' | 'right' | null>(null);

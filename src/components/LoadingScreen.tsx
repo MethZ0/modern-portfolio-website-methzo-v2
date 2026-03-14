@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
-import logoImg from '@/assets/logo.png';
+
+const logoImg = '/Logo.png';
 
 interface LoadingScreenProps {
   onComplete?: () => void;

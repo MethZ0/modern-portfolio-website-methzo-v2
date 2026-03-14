@@ -1,5 +1,6 @@
 import type { PhotographerInfo } from '@/types';
-import profileImage from '@/assets/profile.jpg';
+
+const profileImage = '/profile.jpg';
 
 export const photographerInfo: PhotographerInfo = {
   name: 'Methush Anjula',

@@ -14,10 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ArrowRight, Monitor, Server, Database, GitBranch, Palette, Smartphone, Code as CodeIcon } from 'lucide-react';
-import profileReal from '@/assets/profile.jpg';
-import profileCartoon from '@/assets/profile-cartoon.jpg';
 import { HeroBackground } from '@/components/three/HeroBackground';
-import profileMerged from '@/assets/profile-merged.jpg';
 import {
   FloatingCircle,
   AbstractBlob,
@@ -28,6 +25,9 @@ import {
   ArrowVector,
   AbstractShape,
 } from '@/components/vectors/Vectors';
+
+const profileReal = '/profile.jpg';
+const profileCartoon = '/profile-cartoon.jpg';
 
 gsap.registerPlugin(ScrollTrigger);
 

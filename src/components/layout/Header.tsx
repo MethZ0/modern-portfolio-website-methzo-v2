@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { photographerInfo } from '@/data/photographer';
 import { cn } from '@/lib/utils';
-import logoImg from '@/assets/logo.png';
+
+const logoImg = '/Logo.png';
 
 const navLinks = [
   { name: 'Home', path: '/' },
