@@ -33,8 +33,8 @@ Whether it's a full-stack web application or a mobile app, I focus on writing ma
   phone: '',
   availability: 'Open to internships and collaborations',
   socialLinks: {
-    linkedin: 'https://linkedin.com/in/methushanjula',
-    github: 'https://github.com/methushanjula',
+    linkedin: 'https://www.linkedin.com/in/methush/',
+    github: 'https://github.com/MethZ0',
   },
   portraitImage: profileImage
 };
