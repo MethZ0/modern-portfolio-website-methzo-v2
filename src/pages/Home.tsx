@@ -55,6 +55,36 @@ export default function Home() {
       skills,
     }));
   }, [dbSkills]);
+  const fallbackSkillCategories = useMemo(() => ([
+    {
+      icon: Monitor,
+      title: 'Frontend',
+      skills: [
+        { name: 'React', percentage: 90 },
+        { name: 'TypeScript', percentage: 85 },
+        { name: 'Tailwind CSS', percentage: 88 },
+      ],
+    },
+    {
+      icon: Server,
+      title: 'Backend',
+      skills: [
+        { name: 'Node.js', percentage: 82 },
+        { name: 'Express.js', percentage: 80 },
+        { name: 'REST APIs', percentage: 84 },
+      ],
+    },
+    {
+      icon: Database,
+      title: 'Database',
+      skills: [
+        { name: 'PostgreSQL', percentage: 78 },
+        { name: 'MongoDB', percentage: 80 },
+        { name: 'Supabase', percentage: 75 },
+      ],
+    },
+  ]), []);
+  const displayedSkillCategories = skillCategories.length > 0 ? skillCategories : fallbackSkillCategories;
   const navigate = useNavigate();
   const mainRef = useRef<HTMLDivElement>(null);
 
@@ -206,7 +236,7 @@ export default function Home() {
 
   // ── SKILLS CARDS: separate effect so async data doesn't race with the main GSAP context ──
   useEffect(() => {
-    if (skillsLoading || skillCategories.length === 0 || !skillsCardsRef.current) return;
+    if (skillsLoading || displayedSkillCategories.length === 0 || !skillsCardsRef.current) return;
 
     const cards = Array.from(skillsCardsRef.current.children);
     if (cards.length === 0) return;
@@ -228,7 +258,7 @@ export default function Home() {
     });
 
     return () => ctx.revert();
-  }, [skillCategories, skillsLoading]);
+  }, [displayedSkillCategories, skillsLoading]);
 
   return (
     <>
@@ -367,24 +397,7 @@ export default function Home() {
             </div>
 
             <div ref={skillsCardsRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {skillsLoading
-                ? Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className="rounded-xl border border-border bg-card p-6 animate-pulse">
-                      <div className="flex items-center gap-3 mb-5">
-                        <div className="size-10 rounded-lg bg-secondary" />
-                        <div className="h-4 w-24 rounded bg-secondary" />
-                      </div>
-                      <div className="space-y-3">
-                        {Array.from({ length: 3 }).map((_, j) => (
-                          <div key={j} className="space-y-1">
-                            <div className="h-3 w-32 rounded bg-secondary" />
-                            <div className="h-1 rounded-full bg-secondary" />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))
-                : skillCategories.map((category) => (
+              {displayedSkillCategories.map((category) => (
                 <div
                   key={category.title}
                   className="group relative rounded-xl border border-border bg-card p-6 hover:border-foreground/15 transition-all duration-500 hover:shadow-lg hover:shadow-foreground/[0.03]"
