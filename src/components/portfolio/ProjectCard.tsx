@@ -55,7 +55,7 @@ export function ProjectCard({
             />
             
             {/* Overlay on hover */}
-            <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/40 transition-all duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/0 group-hover:from-black/80 group-hover:via-black/40 transition-all duration-500" />
             
             {/* Category badge */}
             {showCategory && (
@@ -75,7 +75,7 @@ export function ProjectCard({
 
             {/* Bottom info overlay on hover */}
             <div className="absolute bottom-0 left-0 right-0 z-10 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-400">
-              <p className="text-[11px] text-primary-foreground/70 font-body leading-relaxed line-clamp-2">
+              <p className="text-[11px] text-white/80 font-body leading-relaxed line-clamp-2">
                 {project.description}
               </p>
             </div>

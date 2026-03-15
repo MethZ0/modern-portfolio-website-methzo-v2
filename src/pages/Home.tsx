@@ -42,7 +42,7 @@ const categoryIcons: Record<string, React.ComponentType<{ className?: string }>>
 
 export default function Home() {
   const { data: dbFeatured } = useFeaturedProjects();
-  const { data: dbSkills = [] } = useSkills();
+  const { data: dbSkills = [], isLoading: skillsLoading } = useSkills();
   const featuredProjects = useMemo(() => (dbFeatured || []).map(mapDbProject), [dbFeatured]);
   const skillCategories = useMemo(() => {
     const grouped = dbSkills.reduce<Record<string, { name: string; percentage: number }[]>>((acc, s) => {
@@ -122,18 +122,11 @@ export default function Home() {
         scrollTrigger: { trigger: aboutSectionRef.current, start: 'top 80%', toggleActions: 'play none none reverse' },
       });
 
-      // ── SKILLS section ──
+      // ── SKILLS heading + vector (no dependency on async data) ──
       gsap.from(skillsHeadingRef.current?.children || [], {
         x: -80, opacity: 0, duration: 0.8, stagger: 0.1, ease: 'power3.out',
-        scrollTrigger: { trigger: skillsSectionRef.current, start: 'top 75%', toggleActions: 'play none none reverse' },
+        scrollTrigger: { trigger: skillsSectionRef.current, start: 'top 75%', once: true },
       });
-      const skillCards = skillsCardsRef.current?.children;
-      if (skillCards) {
-        gsap.from(skillCards, {
-          y: 80, opacity: 0, scale: 0.9, duration: 0.6, stagger: 0.08, ease: 'back.out(1.4)',
-          scrollTrigger: { trigger: skillsCardsRef.current, start: 'top 80%', toggleActions: 'play none none reverse' },
-        });
-      }
       gsap.to(skillsVectorRef.current, {
         rotation: 360, ease: 'none',
         scrollTrigger: { trigger: skillsSectionRef.current, start: 'top bottom', end: 'bottom top', scrub: true },
@@ -210,6 +203,32 @@ export default function Home() {
 
     return () => ctx.revert();
   }, [featuredProjects]);
+
+  // ── SKILLS CARDS: separate effect so async data doesn't race with the main GSAP context ──
+  useEffect(() => {
+    if (skillsLoading || skillCategories.length === 0 || !skillsCardsRef.current) return;
+
+    const cards = Array.from(skillsCardsRef.current.children);
+    if (cards.length === 0) return;
+
+    const ctx = gsap.context(() => {
+      gsap.from(cards, {
+        y: 80,
+        opacity: 0,
+        scale: 0.9,
+        duration: 0.6,
+        stagger: 0.08,
+        ease: 'back.out(1.4)',
+        scrollTrigger: {
+          trigger: skillsCardsRef.current,
+          start: 'top 80%',
+          once: true,
+        },
+      });
+    });
+
+    return () => ctx.revert();
+  }, [skillCategories, skillsLoading]);
 
   return (
     <>
@@ -348,13 +367,30 @@ export default function Home() {
             </div>
 
             <div ref={skillsCardsRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {skillCategories.map((category) => (
+              {skillsLoading
+                ? Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="rounded-xl border border-border bg-card p-6 animate-pulse">
+                      <div className="flex items-center gap-3 mb-5">
+                        <div className="size-10 rounded-lg bg-secondary" />
+                        <div className="h-4 w-24 rounded bg-secondary" />
+                      </div>
+                      <div className="space-y-3">
+                        {Array.from({ length: 3 }).map((_, j) => (
+                          <div key={j} className="space-y-1">
+                            <div className="h-3 w-32 rounded bg-secondary" />
+                            <div className="h-1 rounded-full bg-secondary" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))
+                : skillCategories.map((category) => (
                 <div
                   key={category.title}
                   className="group relative rounded-xl border border-border bg-card p-6 hover:border-foreground/15 transition-all duration-500 hover:shadow-lg hover:shadow-foreground/[0.03]"
                 >
                   {/* Gradient accent on hover */}
-                  <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-black/[0.06] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 dark:from-white/[0.04]" />
 
                   <div className="relative z-10">
                     {/* Icon + title */}
@@ -412,16 +448,16 @@ export default function Home() {
               alt="Creative Side"
               className="absolute top-0 left-0 w-[200%] h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/10 to-transparent transition-opacity duration-500 group-hover:from-foreground/80" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent transition-opacity duration-500 group-hover:from-black/85" />
             <div className="absolute inset-0 flex flex-col justify-end items-start p-8 md:p-14 z-10">
               <div className="flex items-center gap-2 mb-3">
-                <div className="p-1.5 rounded-full bg-primary-foreground/20 backdrop-blur-sm">
-                  <Palette className="size-4 text-primary-foreground" />
+                <div className="p-1.5 rounded-full bg-white/20 backdrop-blur-sm">
+                  <Palette className="size-4 text-white" />
                 </div>
-                <span className="text-primary-foreground/60 text-xs font-body tracking-[0.2em] uppercase">Creative</span>
+                <span className="text-white/60 text-xs font-body tracking-[0.2em] uppercase">Creative</span>
               </div>
-              <h3 className="font-display text-3xl md:text-5xl text-primary-foreground italic">UI/UX Design</h3>
-              <p className="text-primary-foreground/40 text-sm font-body mt-2">Figma · Adobe XD · Responsive</p>
+              <h3 className="font-display text-3xl md:text-5xl text-white italic">UI/UX Design</h3>
+              <p className="text-white/50 text-sm font-body mt-2">Figma · Adobe XD · Responsive</p>
             </div>
           </div>
 
@@ -437,25 +473,25 @@ export default function Home() {
               alt="Developer Side"
               className="absolute top-0 right-0 w-[200%] h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/10 to-transparent transition-opacity duration-500 group-hover:from-foreground/80" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent transition-opacity duration-500 group-hover:from-black/85" />
             <div className="absolute inset-0 flex flex-col justify-end items-end p-8 md:p-14 text-right z-10">
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-primary-foreground/60 text-xs font-body tracking-[0.2em] uppercase">Technical</span>
-                <div className="p-1.5 rounded-full bg-primary-foreground/20 backdrop-blur-sm">
-                  <CodeIcon className="size-4 text-primary-foreground" />
+                <span className="text-white/60 text-xs font-body tracking-[0.2em] uppercase">Technical</span>
+                <div className="p-1.5 rounded-full bg-white/20 backdrop-blur-sm">
+                  <CodeIcon className="size-4 text-white" />
                 </div>
               </div>
-              <h3 className="font-display text-3xl md:text-5xl text-primary-foreground italic">Development</h3>
-              <p className="text-primary-foreground/40 text-sm font-body mt-2">React · Node.js · TypeScript</p>
+              <h3 className="font-display text-3xl md:text-5xl text-white italic">Development</h3>
+              <p className="text-white/50 text-sm font-body mt-2">React · Node.js · TypeScript</p>
             </div>
           </div>
 
           {/* Center divider */}
-          <div ref={splitDividerRef} className="absolute top-0 left-1/2 -translate-x-1/2 z-20 h-full w-px bg-primary-foreground/30 origin-top" />
+          <div ref={splitDividerRef} className="absolute top-0 left-1/2 -translate-x-1/2 z-20 h-full w-px bg-white/30 origin-top" />
 
           {/* Center label */}
           <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
-            <span className="font-display text-lg md:text-xl italic text-primary-foreground/60 bg-foreground/30 backdrop-blur-md px-6 py-2 rounded-full">
+            <span className="font-display text-lg md:text-xl italic text-white/80 bg-black/30 backdrop-blur-md px-6 py-2 rounded-full">
               Explore
             </span>
           </div>
@@ -464,7 +500,7 @@ export default function Home() {
         {/* ═══════════════════════════════════════════
             FEATURED PROJECTS - horizontal scroll on desktop
         ═══════════════════════════════════════════ */}
-        <section ref={projectsSectionRef} className="relative pt-24 pb-12 border-t border-border overflow-hidden">
+        <section ref={projectsSectionRef} className="relative pt-24 pb-12 border-t border-border overflow-y-hidden lg:overflow-hidden">
           {/* Vector accent */}
           <div className="absolute top-20 right-10 text-foreground pointer-events-none">
             <GridDots className="w-40 opacity-30" />
@@ -483,15 +519,15 @@ export default function Home() {
           {/* Horizontal scrolling cards */}
           <div
             ref={projectsHorizontalRef}
-            className="flex gap-6 px-6 lg:px-8 pb-8 pt-4 will-change-transform"
+            className="flex gap-6 px-6 lg:px-8 pb-8 pt-4 will-change-transform overflow-x-auto lg:overflow-x-clip hide-scrollbar snap-x snap-mandatory lg:snap-none"
           >
             {featuredProjects.map((project, index) => (
-              <div key={project.id} className="min-w-[240px] md:min-w-[260px] flex-shrink-0">
+              <div key={project.id} className="min-w-[240px] md:min-w-[260px] flex-shrink-0 snap-start">
                 <ProjectCard project={project} aspectRatio="landscape" showCategory index={index} />
               </div>
             ))}
             {/* "View all" card */}
-            <div className="min-w-[280px] flex-shrink-0 flex items-center justify-center">
+            <div className="min-w-[280px] flex-shrink-0 flex items-center justify-center snap-start">
               <Link
                 to="/portfolio"
                 className="group flex flex-col items-center gap-4 text-center p-8"
