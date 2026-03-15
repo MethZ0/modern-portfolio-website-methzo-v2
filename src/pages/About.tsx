@@ -64,7 +64,7 @@ export default function About() {
           <div className="max-w-7xl mx-auto grid lg:grid-cols-[1fr_1.1fr] min-h-[85vh]">
             {/* Left — image */}
             <motion.div
-              className="relative bg-muted overflow-hidden"
+              className="relative bg-muted overflow-hidden min-h-[45vh] sm:min-h-[56vh] lg:min-h-0"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8 }}
@@ -72,13 +72,13 @@ export default function About() {
               <img
                 src={photographerInfo.portraitImage}
                 alt={photographerInfo.name}
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-cover object-center"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-background/20" />
             </motion.div>
 
             {/* Right — intro text */}
-            <div className="flex flex-col justify-center px-8 py-20 lg:px-16 lg:py-28">
+            <div className="flex flex-col justify-center px-6 py-14 sm:px-8 sm:py-16 lg:px-16 lg:py-28">
               <motion.div
                 className="space-y-6 max-w-lg"
                 initial={{ opacity: 0, x: 20 }}

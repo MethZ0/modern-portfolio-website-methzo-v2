@@ -241,6 +241,10 @@ export default function Home() {
     const cards = Array.from(skillsCardsRef.current.children);
     if (cards.length === 0) return;
 
+    // Make cards visible immediately so they are never stuck at opacity:0
+    // if the ScrollTrigger trigger point is already past when the effect runs.
+    gsap.set(cards, { opacity: 1, y: 0, scale: 1 });
+
     const ctx = gsap.context(() => {
       gsap.from(cards, {
         y: 80,
@@ -249,10 +253,17 @@ export default function Home() {
         duration: 0.6,
         stagger: 0.08,
         ease: 'back.out(1.4)',
+        // immediateRender:false prevents GSAP from setting opacity:0 on mount
+        // before the ScrollTrigger fires (which would leave cards invisible on
+        // mobile / when the user has already scrolled past the trigger).
+        immediateRender: false,
         scrollTrigger: {
           trigger: skillsCardsRef.current,
-          start: 'top 80%',
-          once: true,
+          start: 'top 85%',
+          // 'play none none none' fires once on enter but still works when
+          // the effect re-mounts with fresher data (unlike `once:true` which
+          // skips triggers already past the start point).
+          toggleActions: 'play none none none',
         },
       });
     });
@@ -377,7 +388,7 @@ export default function Home() {
         {/* ═══════════════════════════════════════════
             SKILLS - heading slides from left, cards stagger up
         ═══════════════════════════════════════════ */}
-        <section ref={skillsSectionRef} className="relative py-32 md:py-44 border-t border-border overflow-hidden">
+        <section ref={skillsSectionRef} className="relative py-32 md:py-44 border-t border-border">
           {/* Rotating vector */}
           <div ref={skillsVectorRef} className="absolute top-1/2 -translate-y-1/2 -left-32 text-foreground pointer-events-none">
             <FloatingCircle className="w-64 md:w-96" />
