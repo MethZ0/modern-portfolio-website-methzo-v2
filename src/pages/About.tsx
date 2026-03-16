@@ -1,9 +1,10 @@
 import { useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Linkedin, Github, Mail, MapPin, GraduationCap, Briefcase, Award, ChevronRight } from 'lucide-react';
+import { Linkedin, Github, Mail, MapPin, GraduationCap, Briefcase, Award, ChevronRight, Twitter, Download } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { photographerInfo } from '@/data/photographer';
+import { useProfile, profileFallback } from '@/hooks/useProfile';
+import { useExperience } from '@/hooks/useExperience';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,8 @@ import { SEOHead } from '@/components/seo/SEOHead';
 gsap.registerPlugin(ScrollTrigger);
 
 export default function About() {
+  const { data: profile = profileFallback } = useProfile();
+  const { data: experience = [] } = useExperience();
   const bioRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
 
@@ -21,115 +24,83 @@ export default function About() {
         const paragraphs = bioRef.current.querySelectorAll('p');
         gsap.fromTo(paragraphs,
           { opacity: 0, y: 30 },
-          {
-            opacity: 1,
-            y: 0,
-            stagger: 0.15,
-            duration: 0.8,
-            ease: 'power3.out',
-            scrollTrigger: { trigger: bioRef.current, start: 'top 80%' },
-          }
+          { opacity: 1, y: 0, stagger: 0.15, duration: 0.8, ease: 'power3.out', scrollTrigger: { trigger: bioRef.current, start: 'top 80%' } }
         );
       }
-
       if (statsRef.current) {
         const items = statsRef.current.querySelectorAll('.stat-item');
         gsap.fromTo(items,
           { opacity: 0, y: 20 },
-          {
-            opacity: 1,
-            y: 0,
-            stagger: 0.1,
-            duration: 0.6,
-            ease: 'power3.out',
-            scrollTrigger: { trigger: statsRef.current, start: 'top 85%' },
-          }
+          { opacity: 1, y: 0, stagger: 0.1, duration: 0.6, ease: 'power3.out', scrollTrigger: { trigger: statsRef.current, start: 'top 85%' } }
         );
       }
     });
-
     return () => ctx.revert();
   }, []);
 
   return (
     <>
-      <SEOHead
-        title="About"
-        description={`Learn about ${photographerInfo.name}, ${photographerInfo.tagline}.`}
-      />
+      <SEOHead title="About" description={`Learn about ${profile.name}, ${profile.tagline}.`} />
 
       <div className="min-h-screen">
         {/* Hero — editorial split */}
         <section className="relative overflow-hidden border-b border-border">
           <div className="max-w-7xl mx-auto grid lg:grid-cols-[1fr_1.1fr] min-h-[85vh]">
             {/* Left — image */}
-            <motion.div
-              className="relative bg-muted overflow-hidden min-h-[45vh] sm:min-h-[56vh] lg:min-h-0"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8 }}
-            >
-              <img
-                src={photographerInfo.portraitImage}
-                alt={photographerInfo.name}
-                className="absolute inset-0 w-full h-full object-cover object-center"
-              />
+            <motion.div className="relative bg-muted overflow-hidden min-h-[45vh] sm:min-h-[56vh] lg:min-h-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
+              <img src={profile.portrait_image} alt={profile.name} className="absolute inset-0 w-full h-full object-cover object-center" />
               <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-background/20" />
             </motion.div>
 
             {/* Right — intro text */}
             <div className="flex flex-col justify-center px-6 py-14 sm:px-8 sm:py-16 lg:px-16 lg:py-28">
-              <motion.div
-                className="space-y-6 max-w-lg"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-              >
+              <motion.div className="space-y-6 max-w-lg" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }}>
                 <p className="text-xs font-body tracking-[0.25em] uppercase text-muted-foreground">About me</p>
-                <h1 className="font-display text-5xl md:text-6xl lg:text-7xl italic tracking-wide leading-[1.05]">
-                  {photographerInfo.name}
-                </h1>
-                <p className="text-lg font-body text-muted-foreground leading-relaxed">
-                  {photographerInfo.heroIntroduction}
-                </p>
+                <h1 className="font-display text-5xl md:text-6xl lg:text-7xl italic tracking-wide leading-[1.05]">{profile.name}</h1>
+                <p className="text-lg font-body text-muted-foreground leading-relaxed">{profile.hero_intro}</p>
 
                 {/* Quick info pills */}
                 <div className="flex flex-wrap gap-3 pt-2">
                   <span className="inline-flex items-center gap-1.5 text-sm font-body text-muted-foreground">
-                    <MapPin className="size-3.5" />
-                    {photographerInfo.location}
+                    <MapPin className="size-3.5" /> {profile.location}
                   </span>
+                  {profile.education && (
+                    <span className="inline-flex items-center gap-1.5 text-sm font-body text-muted-foreground">
+                      <GraduationCap className="size-3.5" /> {profile.education.split(',')[0]}
+                    </span>
+                  )}
                   <span className="inline-flex items-center gap-1.5 text-sm font-body text-muted-foreground">
-                    <GraduationCap className="size-3.5" />
-                    SLIIT
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 text-sm font-body text-muted-foreground">
-                    <Briefcase className="size-3.5" />
-                    {photographerInfo.availability}
+                    <Briefcase className="size-3.5" /> {profile.availability}
                   </span>
                 </div>
 
                 {/* Social */}
                 <div className="flex items-center gap-3 pt-4">
-                  {photographerInfo.socialLinks.github && (
+                  {profile.github_url && (
                     <Button variant="outline" size="sm" asChild className="gap-2 rounded-full">
-                      <a href={photographerInfo.socialLinks.github} target="_blank" rel="noopener noreferrer">
-                        <Github className="size-4" /> GitHub
-                      </a>
+                      <a href={profile.github_url} target="_blank" rel="noopener noreferrer"><Github className="size-4" /> GitHub</a>
                     </Button>
                   )}
-                  {photographerInfo.socialLinks.linkedin && (
+                  {profile.linkedin_url && (
                     <Button variant="outline" size="sm" asChild className="gap-2 rounded-full">
-                      <a href={photographerInfo.socialLinks.linkedin} target="_blank" rel="noopener noreferrer">
-                        <Linkedin className="size-4" /> LinkedIn
-                      </a>
+                      <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer"><Linkedin className="size-4" /> LinkedIn</a>
+                    </Button>
+                  )}
+                  {profile.twitter_url && (
+                    <Button variant="outline" size="sm" asChild className="gap-2 rounded-full">
+                      <a href={profile.twitter_url} target="_blank" rel="noopener noreferrer"><Twitter className="size-4" /> Twitter</a>
                     </Button>
                   )}
                   <Button variant="outline" size="sm" asChild className="gap-2 rounded-full">
-                    <a href={`mailto:${photographerInfo.email}`}>
-                      <Mail className="size-4" /> Email
-                    </a>
+                    <a href={`mailto:${profile.email}`}><Mail className="size-4" /> Email</a>
                   </Button>
+                  {profile.cv_url && (
+                    <Button size="sm" asChild className="gap-2 rounded-full">
+                      <a href={profile.cv_url} target="_blank" rel="noopener noreferrer" download>
+                        <Download className="size-4" /> Download CV
+                      </a>
+                    </Button>
+                  )}
                 </div>
               </motion.div>
             </div>
@@ -140,15 +111,11 @@ export default function About() {
         <section className="py-24 md:py-32 px-6 lg:px-8">
           <div className="max-w-5xl mx-auto grid lg:grid-cols-[280px_1fr] gap-12 lg:gap-20">
             <div>
-              <h2 className="font-display text-3xl md:text-4xl italic tracking-wide sticky top-28">
-                My Story
-              </h2>
+              <h2 className="font-display text-3xl md:text-4xl italic tracking-wide sticky top-28">My Story</h2>
             </div>
             <div ref={bioRef} className="space-y-6">
-              {photographerInfo.biography.split('\n\n').map((paragraph, index) => (
-                <p key={index} className="text-base font-body leading-[1.9] text-muted-foreground">
-                  {paragraph}
-                </p>
+              {profile.biography.split('\n\n').map((paragraph, index) => (
+                <p key={index} className="text-base font-body leading-[1.9] text-muted-foreground">{paragraph}</p>
               ))}
             </div>
           </div>
@@ -160,20 +127,11 @@ export default function About() {
         <section className="py-24 md:py-32 px-6 lg:px-8">
           <div className="max-w-5xl mx-auto grid lg:grid-cols-[280px_1fr] gap-12 lg:gap-20">
             <div>
-              <h2 className="font-display text-3xl md:text-4xl italic tracking-wide sticky top-28">
-                Approach
-              </h2>
+              <h2 className="font-display text-3xl md:text-4xl italic tracking-wide sticky top-28">Approach</h2>
             </div>
             <div className="space-y-6">
-              {photographerInfo.approach.split('\n\n').map((paragraph, index) => (
-                <motion.p
-                  key={index}
-                  className="text-base font-body leading-[1.9] text-muted-foreground"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
+              {profile.approach.split('\n\n').map((paragraph, index) => (
+                <motion.p key={index} className="text-base font-body leading-[1.9] text-muted-foreground" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: index * 0.1 }}>
                   {paragraph}
                 </motion.p>
               ))}
@@ -183,6 +141,76 @@ export default function About() {
 
         <Separator className="max-w-5xl mx-auto" />
 
+        {/* ── Experience Timeline ── */}
+        {experience.length > 0 && (
+          <>
+            <section className="py-24 md:py-32 px-6 lg:px-8">
+              <div className="max-w-5xl mx-auto grid lg:grid-cols-[280px_1fr] gap-12 lg:gap-20">
+                <div>
+                  <h2 className="font-display text-3xl md:text-4xl italic tracking-wide sticky top-28">Experience</h2>
+                </div>
+                <div className="relative">
+                  {/* Vertical line */}
+                  <div className="absolute left-0 top-2 bottom-2 w-px bg-border hidden sm:block" />
+
+                  <div className="space-y-10">
+                    {experience.map((entry, i) => (
+                      <motion.div
+                        key={entry.id}
+                        className="sm:pl-8 relative"
+                        initial={{ opacity: 0, y: 24 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: i * 0.08 }}
+                      >
+                        {/* Timeline dot */}
+                        <div className={`absolute left-0 top-1.5 size-2 rounded-full border-2 -translate-x-[3.5px] hidden sm:block ${
+                          entry.type === 'work'
+                            ? 'bg-foreground border-foreground'
+                            : 'bg-background border-foreground'
+                        }`} />
+
+                        <div className="space-y-2">
+                          {/* Type badge */}
+                          <span className={`inline-flex items-center gap-1 text-[10px] font-body uppercase tracking-[0.15em] px-2 py-0.5 rounded-full ${
+                            entry.type === 'work'
+                              ? 'bg-foreground/10 text-foreground'
+                              : 'bg-muted text-muted-foreground'
+                          }`}>
+                            {entry.type === 'work'
+                              ? <Briefcase className="size-2.5" />
+                              : <GraduationCap className="size-2.5" />
+                            }
+                            {entry.type === 'work' ? 'Work' : 'Education'}
+                          </span>
+
+                          <div>
+                            <h3 className="font-body font-semibold text-base">{entry.title}</h3>
+                            <p className="text-sm font-body text-muted-foreground">
+                              {entry.organization}
+                              {entry.location ? ` · ${entry.location}` : ''}
+                            </p>
+                            <p className="text-xs font-body text-muted-foreground mt-0.5">
+                              {entry.start_date} — {entry.end_date || 'Present'}
+                            </p>
+                          </div>
+
+                          {entry.description && (
+                            <p className="text-sm font-body text-muted-foreground leading-relaxed pt-1">
+                              {entry.description}
+                            </p>
+                          )}
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
+            <Separator className="max-w-5xl mx-auto" />
+          </>
+        )}
+
         {/* Tech Stack + Awards */}
         <section className="py-24 md:py-32 px-6 lg:px-8" ref={statsRef}>
           <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-16 lg:gap-24">
@@ -190,28 +218,19 @@ export default function About() {
             <div className="space-y-6">
               <h3 className="font-display text-2xl md:text-3xl italic tracking-wide">Tech Stack</h3>
               <div className="flex flex-wrap gap-2">
-                {photographerInfo.clients.map((tech) => (
-                  <Badge
-                    key={tech}
-                    variant="secondary"
-                    className="stat-item font-body text-sm px-4 py-2 rounded-full"
-                  >
-                    {tech}
-                  </Badge>
+                {(profile.tech_stack ?? []).map((tech) => (
+                  <Badge key={tech} variant="secondary" className="stat-item font-body text-sm px-4 py-2 rounded-full">{tech}</Badge>
                 ))}
               </div>
             </div>
-
             {/* Awards */}
             <div className="space-y-6">
               <h3 className="font-display text-2xl md:text-3xl italic tracking-wide">Recognition</h3>
               <ul className="space-y-4">
-                {photographerInfo.awards.map((award, i) => (
+                {(profile.awards ?? []).map((award, i) => (
                   <li key={i} className="stat-item flex items-start gap-3 group">
                     <Award className="size-4 mt-1 text-muted-foreground shrink-0 group-hover:text-foreground transition-colors" />
-                    <span className="text-base font-body text-muted-foreground group-hover:text-foreground transition-colors">
-                      {award}
-                    </span>
+                    <span className="text-base font-body text-muted-foreground group-hover:text-foreground transition-colors">{award}</span>
                   </li>
                 ))}
               </ul>
@@ -222,21 +241,14 @@ export default function About() {
         {/* CTA */}
         <section className="py-20 md:py-28 px-6 lg:px-8 border-t border-border bg-muted/30">
           <div className="max-w-3xl mx-auto text-center space-y-6">
-            <motion.h2
-              className="font-display text-4xl md:text-5xl italic tracking-wide"
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
+            <motion.h2 className="font-display text-4xl md:text-5xl italic tracking-wide" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
               Let's build something together
             </motion.h2>
             <p className="text-muted-foreground font-body text-lg max-w-md mx-auto">
-              I'm open to internships, collaborations, and exciting opportunities.
+              {profile.availability}. Reach out and let's talk.
             </p>
             <Button asChild size="lg" className="rounded-full gap-2 mt-2">
-              <a href={`mailto:${photographerInfo.email}`}>
-                Get in Touch <ChevronRight className="size-4" />
-              </a>
+              <a href={`mailto:${profile.email}`}>Get in Touch <ChevronRight className="size-4" /></a>
             </Button>
           </div>
         </section>

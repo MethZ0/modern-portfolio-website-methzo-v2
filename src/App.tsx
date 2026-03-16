@@ -22,6 +22,7 @@ const Contact = lazy(() => import("./pages/Contact"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 const Admin = lazy(() => import("./pages/Admin"));
+const Blog = lazy(() => import("./pages/Blog"));
 
 const queryClient = new QueryClient();
 
@@ -68,6 +69,14 @@ function AnimatedRoutes() {
           element={
             <PageTransition>
               <Contact />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/blog"
+          element={
+            <PageTransition>
+              <Blog />
             </PageTransition>
           }
         />

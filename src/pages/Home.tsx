@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { photographerInfo } from '@/data/photographer';
+import { useProfile, profileFallback } from '@/hooks/useProfile';
 import { useFeaturedProjects } from '@/hooks/useProjects';
 import { useSkills } from '@/hooks/useSkills';
 import { mapDbProject } from '@/lib/mappers';
@@ -41,6 +41,7 @@ const categoryIcons: Record<string, React.ComponentType<{ className?: string }>>
 };
 
 export default function Home() {
+  const { data: profile = profileFallback } = useProfile();
   const { data: dbFeatured } = useFeaturedProjects();
   const { data: dbSkills = [], isLoading: skillsLoading } = useSkills();
   const featuredProjects = useMemo(() => (dbFeatured || []).map(mapDbProject), [dbFeatured]);
@@ -305,7 +306,7 @@ export default function Home() {
               <span className="not-italic text-muted-foreground">Anjula</span>
             </h1>
             <p ref={heroSubRef} className="mt-6 md:mt-8 text-sm md:text-lg font-body tracking-[0.3em] uppercase text-muted-foreground">
-              Designer & Developer
+              {profile.hero_subtitle}
             </p>
 
             {/* Quick navigation pills */}
@@ -313,13 +314,13 @@ export default function Home() {
               <div ref={heroLeftRef}>
                 <Button variant="outline" size="lg" className="font-body rounded-full gap-2" onClick={() => navigate('/portfolio?filter=design')}>
                   <Palette className="size-4" />
-                  Creative Works
+                  {profile.hero_cta_left}
                 </Button>
               </div>
               <div ref={heroRightRef}>
                 <Button variant="outline" size="lg" className="font-body rounded-full gap-2" onClick={() => navigate('/portfolio?filter=development')}>
                   <CodeIcon className="size-4" />
-                  Development
+                  {profile.hero_cta_right}
                 </Button>
               </div>
             </div>
@@ -349,14 +350,12 @@ export default function Home() {
           <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center relative z-10">
             <div ref={aboutTextRef} className="space-y-6">
               <span className="text-xs font-body tracking-[0.3em] uppercase text-muted-foreground">About Me</span>
-              <h2 className="font-display text-4xl md:text-6xl italic tracking-wide leading-[1.1]">
-                Crafting digital
-                <br />
-                experiences
+              <h2 className="font-display text-4xl md:text-6xl italic tracking-wide leading-[1.1] whitespace-pre-line">
+                {profile.about_headline}
               </h2>
               <Separator className="w-16" />
               <p className="text-base font-body leading-[1.9] text-muted-foreground max-w-lg">
-                {photographerInfo.biography.split('\n\n')[0]}
+                {profile.biography.split('\n\n')[0]}
               </p>
               <Button variant="ghost" asChild className="group font-body">
                 <Link to="/about">
@@ -370,7 +369,7 @@ export default function Home() {
               <div className="aspect-[3/4] rounded-2xl overflow-hidden bg-muted">
                 <img
                   src={profileReal}
-                  alt={photographerInfo.name}
+                  alt={profile.name}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -586,7 +585,7 @@ export default function Home() {
               something together
             </h2>
             <p className="text-base font-body text-muted-foreground max-w-md mx-auto leading-[1.8]">
-              {photographerInfo.availability}. Whether it's a design project or a full-stack application, I'm ready to bring ideas to life.
+              {profile.availability}. Whether it's a design project or a full-stack application, I'm ready to bring ideas to life.
             </p>
             <div className="pt-4">
               <Button size="lg" asChild className="font-body rounded-full px-8 gap-2">

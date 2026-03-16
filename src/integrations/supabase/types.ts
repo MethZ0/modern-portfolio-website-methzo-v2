@@ -14,11 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
+      posts: {
+        Row: {
+          id: string
+          title: string
+          slug: string
+          excerpt: string
+          cover_image: string
+          medium_url: string
+          tags: string[]
+          published_at: string
+          is_published: boolean
+          sort_order: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          slug: string
+          excerpt?: string
+          cover_image?: string
+          medium_url?: string
+          tags?: string[]
+          published_at?: string
+          is_published?: boolean
+          sort_order?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          slug?: string
+          excerpt?: string
+          cover_image?: string
+          medium_url?: string
+          tags?: string[]
+          published_at?: string
+          is_published?: boolean
+          sort_order?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
+      experience: {
+        Row: {
+          id: string
+          type: string
+          title: string
+          organization: string
+          location: string
+          start_date: string
+          end_date: string
+          description: string
+          sort_order: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          type?: string
+          title: string
+          organization: string
+          location?: string
+          start_date: string
+          end_date?: string
+          description?: string
+          sort_order?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          type?: string
+          title?: string
+          organization?: string
+          location?: string
+          start_date?: string
+          end_date?: string
+          description?: string
+          sort_order?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
       contact_submissions: {
         Row: {
           created_at: string
           email: string
           id: string
+          is_read: boolean
           message: string
           name: string
           project_type: string
@@ -27,6 +109,7 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
+          is_read?: boolean
           message: string
           name: string
           project_type: string
@@ -35,9 +118,85 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          is_read?: boolean
           message?: string
           name?: string
           project_type?: string
+        }
+        Relationships: []
+      }
+      site_profile: {
+        Row: {
+          id: string
+          name: string
+          tagline: string
+          hero_subtitle: string
+          hero_cta_left: string
+          hero_cta_right: string
+          about_headline: string
+          hero_intro: string
+          biography: string
+          approach: string
+          education: string
+          location: string
+          email: string
+          phone: string
+          availability: string
+          portrait_image: string
+          github_url: string
+          linkedin_url: string
+          twitter_url: string
+          cv_url: string
+          tech_stack: string[]
+          awards: string[]
+        }
+        Insert: {
+          id?: string
+          name?: string
+          tagline?: string
+          hero_subtitle?: string
+          hero_cta_left?: string
+          hero_cta_right?: string
+          about_headline?: string
+          hero_intro?: string
+          biography?: string
+          approach?: string
+          education?: string
+          location?: string
+          email?: string
+          phone?: string
+          availability?: string
+          portrait_image?: string
+          github_url?: string
+          linkedin_url?: string
+          twitter_url?: string
+          tech_stack?: string[]
+          cv_url?: string
+          awards?: string[]
+        }
+        Update: {
+          id?: string
+          name?: string
+          tagline?: string
+          hero_subtitle?: string
+          hero_cta_left?: string
+          hero_cta_right?: string
+          about_headline?: string
+          hero_intro?: string
+          biography?: string
+          approach?: string
+          education?: string
+          location?: string
+          email?: string
+          phone?: string
+          availability?: string
+          portrait_image?: string
+          github_url?: string
+          linkedin_url?: string
+          twitter_url?: string
+          cv_url?: string
+          tech_stack?: string[]
+          awards?: string[]
         }
         Relationships: []
       }
