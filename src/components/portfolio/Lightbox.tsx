@@ -99,7 +99,7 @@ export function Lightbox({
             variant="ghost"
             size="icon"
             onClick={onClose}
-            className="absolute top-4 right-4 z-50 size-10 text-white hover:bg-white/10 rounded-full"
+            className="absolute top-4 right-4 md:top-6 md:right-6 z-50 size-10 text-white bg-black/30 hover:bg-black/50 rounded-full md:bg-transparent md:hover:bg-white/10 backdrop-blur-sm md:backdrop-blur-none"
             aria-label="Close lightbox"
           >
             <X className="size-6" />

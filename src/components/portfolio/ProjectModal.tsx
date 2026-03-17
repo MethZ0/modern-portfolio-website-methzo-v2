@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Calendar, MapPin, Code, User, ArrowUpRight, Github } from 'lucide-react';
+import { Calendar, MapPin, Code, User, ArrowUpRight, Github, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -30,11 +30,22 @@ export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <DialogContent className="max-w-4xl p-0 overflow-hidden bg-background h-[90vh] sm:h-[85vh] flex flex-col gap-0 border-border/50">
+        <DialogContent className="max-w-4xl p-0 overflow-hidden bg-background h-[90vh] md:h-[85vh] flex flex-col gap-0 border-border/50 [&>button]:hidden">
           <DialogHeader className="sr-only">
             <DialogTitle>{project.title}</DialogTitle>
             <DialogDescription>{project.description}</DialogDescription>
           </DialogHeader>
+
+          {/* Custom Visible Close Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="absolute bottom-6 right-6 md:top-6 md:bottom-auto md:right-6 z-[100] size-12 md:size-10 rounded-full bg-background/80 shadow-2xl backdrop-blur-md hover:bg-background/100 text-foreground border border-border/50"
+          >
+            <X className="size-5 md:size-5" />
+            <span className="sr-only">Close</span>
+          </Button>
 
           <ScrollArea className="flex-1 overflow-y-auto">
             {/* Hero Image */}
