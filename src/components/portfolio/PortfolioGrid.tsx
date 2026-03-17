@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Project } from '@/types';
 import { ProjectCard } from './ProjectCard';
+import { ProjectModal } from './ProjectModal';
 
 interface PortfolioGridProps {
   projects: Project[];
@@ -13,8 +14,11 @@ interface PortfolioGridProps {
  * Responsive: 3 columns desktop, 2 tablet, 1 mobile
  */
 export function PortfolioGrid({ projects }: PortfolioGridProps) {
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
   return (
-    <motion.div
+    <>
+      <motion.div
       layout
       className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
     >
@@ -37,10 +41,18 @@ export function PortfolioGrid({ projects }: PortfolioGridProps) {
               aspectRatio="landscape"
               showCategory={true}
               index={index}
+              onClick={() => setSelectedProject(project)}
             />
           </motion.div>
         ))}
       </AnimatePresence>
-    </motion.div>
+      </motion.div>
+
+      <ProjectModal
+        project={selectedProject}
+        isOpen={!!selectedProject}
+        onClose={() => setSelectedProject(null)}
+      />
+    </>
   );
 }

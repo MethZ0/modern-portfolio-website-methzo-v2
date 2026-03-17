@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useQuery } from '@tanstack/react-query';
-import { Loader2, Plus, Pencil, Trash2, LogOut, ImagePlus, FolderKanban, Zap, User, Link2, Code2, Award, Inbox, Briefcase, BookOpen, LayoutDashboard } from 'lucide-react';
+import { Loader2, Plus, Pencil, Trash2, LogOut, ImagePlus, FolderKanban, Zap, User, Link2, Code2, Award, Inbox, Briefcase, BookOpen, LayoutDashboard, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Tables } from '@/integrations/supabase/types';
 import { SkillsManager } from '@/components/admin/SkillsManager';
@@ -22,12 +22,15 @@ import { InboxManager } from '@/components/admin/InboxManager';
 import { ExperienceManager } from '@/components/admin/ExperienceManager';
 import { BlogManager } from '@/components/admin/BlogManager';
 import { OverviewDashboard } from '@/components/admin/OverviewDashboard';
+import { SortableProjectList } from '@/components/admin/SortableProjectList';
+import { ChangePasswordForm } from '@/components/admin/ChangePasswordForm';
+import { useSessionTimeout } from '@/hooks/useSessionTimeout';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 
 type Project = Tables<'projects'>;
 
-type Tab = 'overview' | 'projects' | 'skills' | 'profile' | 'social' | 'techstack' | 'awards' | 'inbox' | 'experience' | 'blog';
+type Tab = 'overview' | 'projects' | 'skills' | 'profile' | 'social' | 'techstack' | 'awards' | 'inbox' | 'experience' | 'blog' | 'security';
 
 const tabs: { id: Tab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
@@ -40,12 +43,15 @@ const tabs: { id: Tab; label: string; icon: React.ComponentType<{ className?: st
   { id: 'experience', label: 'Experience', icon: Briefcase },
   { id: 'blog', label: 'Blog', icon: BookOpen },
   { id: 'inbox', label: 'Inbox', icon: Inbox },
+  { id: 'security', label: 'Security', icon: ShieldCheck },
 ];
 
 export default function Admin() {
   const { user, isAdmin, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>('overview');
+
+  useSessionTimeout(signOut, 30 * 60 * 1000, isAdmin);
 
   // Unread inbox count for badge
   const { data: unreadSubmissions = [] } = useQuery<{ is_read: boolean }[]>({
@@ -283,7 +289,7 @@ export default function Admin() {
                         <Input value={form.slug} onChange={(e) => setForm(f => ({ ...f, slug: e.target.value }))} className="font-body" />
                       </div>
                     </div>
-                    <div className="grid sm:grid-cols-3 gap-4">
+                    <div className="grid sm:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
                         <Label className="text-xs font-body uppercase tracking-wide text-muted-foreground">Category</Label>
                         <Select value={form.category} onValueChange={(v) => setForm(f => ({ ...f, category: v }))}>
@@ -302,10 +308,6 @@ export default function Admin() {
                       <div className="space-y-1.5">
                         <Label className="text-xs font-body uppercase tracking-wide text-muted-foreground">Year</Label>
                         <Input value={form.year} onChange={(e) => setForm(f => ({ ...f, year: e.target.value }))} className="font-body" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <Label className="text-xs font-body uppercase tracking-wide text-muted-foreground">Sort Order</Label>
-                        <Input type="number" value={form.sort_order} onChange={(e) => setForm(f => ({ ...f, sort_order: parseInt(e.target.value) || 0 }))} className="font-body" />
                       </div>
                     </div>
                     <div className="space-y-1.5">
@@ -385,24 +387,12 @@ export default function Admin() {
               </Card>
             )}
 
-            <div className="space-y-3">
-              {projects.map((project) => (
-                <div key={project.id} className="flex items-center gap-4 rounded-xl border border-border bg-card p-4">
-                  {project.cover_image && <img src={project.cover_image} alt="" className="size-14 rounded-lg object-cover shrink-0" />}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-body font-medium text-sm truncate">{project.title}</h3>
-                    <p className="text-xs text-muted-foreground font-body">{project.category} · {project.year}{project.is_featured && ' · ⭐ Featured'}</p>
-                  </div>
-                  <div className="flex gap-1 shrink-0">
-                    <Button variant="ghost" size="icon" onClick={() => editProject(project)}><Pencil className="size-4" /></Button>
-                    <Button variant="ghost" size="icon" onClick={() => deleteProject(project.id)}><Trash2 className="size-4 text-destructive" /></Button>
-                  </div>
-                </div>
-              ))}
-              {projects.length === 0 && (
-                <p className="text-center text-sm text-muted-foreground font-body py-12">No projects yet. Click "Add Project" to get started.</p>
-              )}
-            </div>
+            <SortableProjectList
+              projects={projects}
+              onEdit={editProject}
+              onDelete={deleteProject}
+              onReordered={fetchProjects}
+            />
           </div>
         )}
 
@@ -477,6 +467,15 @@ export default function Admin() {
             <p className="text-sm font-body text-muted-foreground">Messages sent via the Contact page form.</p>
             <Separator />
             <InboxManager />
+          </div>
+        )}
+
+        {/* ── Security Tab ── */}
+        {activeTab === 'security' && (
+          <div className="space-y-6">
+            <h2 className="font-display text-xl italic">Security Settings</h2>
+            <Separator />
+            <ChangePasswordForm />
           </div>
         )}
       </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+
 import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -11,13 +11,15 @@ interface ProjectCardProps {
   aspectRatio?: 'portrait' | 'landscape' | 'square';
   showCategory?: boolean;
   index?: number;
+  onClick?: () => void;
 }
 
 export function ProjectCard({ 
   project, 
   aspectRatio, 
   showCategory = true,
-  index = 0 
+  index = 0,
+  onClick
 }: ProjectCardProps) {
   const [isLoaded, setIsLoaded] = React.useState(false);
 
@@ -37,7 +39,7 @@ export function ProjectCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.08 }}
     >
-      <Link to={`/project/${project.slug}`} className="group block">
+      <button onClick={onClick} className="group block w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl">
         <div className="relative overflow-hidden rounded-xl">
           {/* Image */}
           <div className="relative overflow-hidden aspect-[4/3] bg-muted">
@@ -96,7 +98,7 @@ export function ProjectCard({
             </p>
           )}
         </div>
-      </Link>
+      </button>
     </motion.div>
   );
 }

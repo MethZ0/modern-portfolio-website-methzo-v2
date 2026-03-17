@@ -12,6 +12,8 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AnimatePresence } from "framer-motion";
 import { lazy, Suspense, useState } from "react";
 import { LoadingScreen } from "@/components/LoadingScreen";
+import { ScrollToTop } from "@/components/layout/ScrollToTop";
+import { HelmetProvider } from "react-helmet-async";
 
 // Code-split route components for better performance
 const Index = lazy(() => import("./pages/Index"));
@@ -114,13 +116,15 @@ const App = () => {
 
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider>
+      <HelmetProvider>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider>
           <TooltipProvider>
             <Toaster />
             <Sonner />
             <LoadingScreen onComplete={() => setAppReady(true)} />
             <BrowserRouter>
+              <ScrollToTop />
               <SkipToContent />
               <Layout showChrome={appReady}>
                 <Suspense fallback={<LoadingFallback />}>
@@ -131,6 +135,7 @@ const App = () => {
           </TooltipProvider>
         </ThemeProvider>
       </QueryClientProvider>
+      </HelmetProvider>
     </ErrorBoundary>
   );
 };

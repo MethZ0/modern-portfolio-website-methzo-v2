@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { photographerInfo } from '@/data/photographer';
+import { Helmet } from 'react-helmet-async';
+import { useProfile, profileFallback } from '@/hooks/useProfile';
 
 interface SEOHeadProps {
   title?: string;
@@ -17,42 +17,39 @@ export function SEOHead({
 }: SEOHeadProps) {
   const location = useLocation();
   
+  const { data: dbProfile } = useProfile();
+  const profile = dbProfile || profileFallback;
+
   const fullTitle = title 
-    ? `${title} | ${photographerInfo.name}` 
-    : `${photographerInfo.name} - ${photographerInfo.tagline}`;
+    ? `${title} | ${profile.name}` 
+    : `${profile.name} - ${profile.tagline}`;
   
-  const fullDescription = description || photographerInfo.heroIntroduction;
+  const fullDescription = description || profile.about_headline;
   const baseUrl = window.location.origin;
   const fullUrl = `${baseUrl}${location.pathname}`;
 
-  useEffect(() => {
-    document.title = fullTitle;
+  return (
+    <Helmet>
+      {/* Standard metadata tags */}
+      <title>{fullTitle}</title>
+      <meta name="description" content={fullDescription} />
+      <meta name="author" content={profile.name} />
+      <meta name="keywords" content={`software engineer, ${profile.name}, full-stack developer, UI/UX, SLIIT`} />
 
-    const updateMetaTag = (name: string, content: string, isProperty = false) => {
-      const attribute = isProperty ? 'property' : 'name';
-      let element = document.querySelector(`meta[${attribute}="${name}"]`);
-      if (!element) {
-        element = document.createElement('meta');
-        element.setAttribute(attribute, name);
-        document.head.appendChild(element);
-      }
-      element.setAttribute('content', content);
-    };
+      {/* Open Graph / Facebook */}
+      <meta property="og:type" content={type} />
+      <meta property="og:url" content={fullUrl} />
+      <meta property="og:title" content={fullTitle} />
+      <meta property="og:description" content={fullDescription} />
+      <meta property="og:image" content={image} />
+      <meta property="og:site_name" content={profile.name} />
 
-    updateMetaTag('description', fullDescription);
-    updateMetaTag('og:title', fullTitle, true);
-    updateMetaTag('og:description', fullDescription, true);
-    updateMetaTag('og:type', type, true);
-    updateMetaTag('og:url', fullUrl, true);
-    updateMetaTag('og:image', image, true);
-    updateMetaTag('og:site_name', photographerInfo.name, true);
-    updateMetaTag('twitter:card', 'summary_large_image');
-    updateMetaTag('twitter:title', fullTitle);
-    updateMetaTag('twitter:description', fullDescription);
-    updateMetaTag('twitter:image', image);
-    updateMetaTag('author', photographerInfo.name);
-    updateMetaTag('keywords', `software engineer, ${photographerInfo.name}, full-stack developer, React, Node.js, SLIIT`);
-  }, [fullTitle, fullDescription, fullUrl, image, type]);
-
-  return null;
+      {/* Twitter */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:url" content={fullUrl} />
+      <meta name="twitter:title" content={fullTitle} />
+      <meta name="twitter:description" content={fullDescription} />
+      <meta name="twitter:image" content={image} />
+    </Helmet>
+  );
 }

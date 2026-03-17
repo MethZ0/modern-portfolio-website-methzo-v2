@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { format } from 'date-fns';
 import { Loader2 } from 'lucide-react';
+import { BlogListSkeleton } from '@/components/ui/Skeletons';
 
 export default function Blog() {
   const { data: posts = [], isLoading } = usePosts(true);
@@ -50,9 +51,7 @@ export default function Blog() {
         <section className="pb-28 md:pb-40 px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
             {isLoading ? (
-              <div className="flex justify-center py-20">
-                <Loader2 className="size-6 animate-spin text-muted-foreground" />
-              </div>
+              <BlogListSkeleton />
             ) : posts.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 gap-4 text-muted-foreground">
                 <BookOpen className="size-10 opacity-30" />

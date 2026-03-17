@@ -5,8 +5,8 @@ import { mapDbProject } from '@/lib/mappers';
 import { PortfolioGrid } from '@/components/portfolio/PortfolioGrid';
 import { DesignShowcase } from '@/components/portfolio/DesignShowcase';
 import { SEOHead } from '@/components/seo/SEOHead';
+import { ProjectSkeleton } from '@/components/ui/Skeletons';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2 } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -139,8 +139,8 @@ export default function Portfolio() {
         {/* Projects */}
         <section className="py-12 md:py-16 px-4 md:px-6 max-w-6xl mx-auto">
           {isLoading ? (
-            <div className="flex justify-center py-20">
-              <Loader2 className="size-6 animate-spin text-muted-foreground" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {[1, 2, 3, 4, 5, 6].map(i => <ProjectSkeleton key={i} />)}
             </div>
           ) : (
             <AnimatePresence mode="wait">

@@ -1,4 +1,4 @@
-import { useRef, useEffect, useMemo } from 'react';
+import { useRef, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
@@ -8,7 +8,9 @@ import { useFeaturedProjects } from '@/hooks/useProjects';
 import { useSkills } from '@/hooks/useSkills';
 import { mapDbProject } from '@/lib/mappers';
 import { ProjectCard } from '@/components/portfolio/ProjectCard';
+import { ProjectModal } from '@/components/portfolio/ProjectModal';
 import { SEOHead } from '@/components/seo/SEOHead';
+import type { Project } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -44,6 +46,7 @@ export default function Home() {
   const { data: profile = profileFallback } = useProfile();
   const { data: dbFeatured } = useFeaturedProjects();
   const { data: dbSkills = [], isLoading: skillsLoading } = useSkills();
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const featuredProjects = useMemo(() => (dbFeatured || []).map(mapDbProject), [dbFeatured]);
   const skillCategories = useMemo(() => {
     const grouped = dbSkills.reduce<Record<string, { name: string; percentage: number }[]>>((acc, s) => {
@@ -546,7 +549,7 @@ export default function Home() {
           >
             {featuredProjects.map((project, index) => (
               <div key={project.id} className="min-w-[240px] md:min-w-[260px] flex-shrink-0 snap-start">
-                <ProjectCard project={project} aspectRatio="landscape" showCategory index={index} />
+                <ProjectCard project={project} aspectRatio="landscape" showCategory index={index} onClick={() => setSelectedProject(project)} />
               </div>
             ))}
             {/* "View all" card */}
@@ -598,6 +601,12 @@ export default function Home() {
           </div>
         </section>
       </div>
+
+      <ProjectModal
+        project={selectedProject}
+        isOpen={!!selectedProject}
+        onClose={() => setSelectedProject(null)}
+      />
     </>
   );
 }
