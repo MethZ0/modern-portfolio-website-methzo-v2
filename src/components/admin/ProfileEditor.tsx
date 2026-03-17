@@ -207,16 +207,29 @@ export function ProfileEditor() {
                 if (!file) return;
                 setUploadingCv(true);
                 try {
-                  const fd = new FormData();
-                  fd.append('file', file);
-                  fd.append('folder', 'portfolio/cv');
-                  const { data, error } = await supabase.functions.invoke('upload-cloudinary', { body: fd });
-                  if (error) throw error;
-                  if (data?.error) throw new Error(data.error);
-                  setForm(f => ({ ...f, cv_url: data.url }));
-                  toast.success('CV uploaded successfully');
+                  const fileExt = file.name.split('.').pop();
+                  const fileName = `cv-${Date.now()}.${fileExt}`;
+                  const filePath = `cv/${fileName}`;
+                  
+                  // Upload to Supabase Storage instead of Cloudinary
+                  const { error: uploadError } = await supabase.storage
+                    .from('portfolio')
+                    .upload(filePath, file);
+                    
+                  if (uploadError) {
+                    throw uploadError;
+                  }
+                  
+                  // Get the public URL
+                  const { data: { publicUrl } } = supabase.storage
+                    .from('portfolio')
+                    .getPublicUrl(filePath);
+                    
+                  setForm(f => ({ ...f, cv_url: publicUrl }));
+                  toast.success('CV uploaded successfully to Supabase Storage');
                 } catch (err: any) {
-                  toast.error(err.message || 'CV upload failed');
+                  console.error('Upload Error:', err);
+                  toast.error(err.message || 'CV upload failed. Make sure a public "portfolio" bucket exists in Supabase Storage.');
                 } finally {
                   setUploadingCv(false);
                   e.target.value = '';

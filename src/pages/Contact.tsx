@@ -5,6 +5,7 @@ import { ContactForm } from '@/components/forms/ContactForm';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { SEOHead } from '@/components/seo/SEOHead';
+import { forceDownloadFile } from '@/lib/utils';
 
 export default function Contact() {
   const { data: profile = profileFallback } = useProfile();
@@ -72,7 +73,13 @@ export default function Contact() {
               {/* Download CV */}
               {profile.cv_url && (
                 <Button asChild className="w-full gap-2 rounded-full font-body">
-                  <a href={profile.cv_url} target="_blank" rel="noopener noreferrer" download>
+                  <a 
+                    href={profile.cv_url} 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      forceDownloadFile(profile.cv_url!, `Resume_${profile.name.replace(/\s+/g, '_')}.pdf`);
+                    }}
+                  >
                     <Download className="size-4" /> Download CV
                   </a>
                 </Button>

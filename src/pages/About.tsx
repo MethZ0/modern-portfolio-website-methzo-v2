@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { SEOHead } from '@/components/seo/SEOHead';
+import { forceDownloadFile } from '@/lib/utils';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -96,7 +97,13 @@ export default function About() {
                   </Button>
                   {profile.cv_url && (
                     <Button size="sm" asChild className="gap-2 rounded-full">
-                      <a href={profile.cv_url} target="_blank" rel="noopener noreferrer" download>
+                      <a 
+                        href={profile.cv_url} 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          forceDownloadFile(profile.cv_url!, `Resume_${profile.name.replace(/\s+/g, '_')}.pdf`);
+                        }}
+                      >
                         <Download className="size-4" /> Download CV
                       </a>
                     </Button>
